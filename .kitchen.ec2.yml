@@ -1,0 +1,115 @@
+<%
+# To keep the YAML as simple as possible, some values are computed here
+AWS_ACCESS_KEY_ID = ENV['AWS_ACCESS_KEY_ID'] ||'(ENTER_ACCESS_KEY_ID)'
+AWS_ACCESS_KEY_SECRET = ENV['AWS_SECRET_KEY'] || '(ENTER_AWS_SECRET_ID)'
+AWS_SSH_KEY_ID = ENV['AWS_SSH_KEY_ID'] || 'default'
+AWS_SSH_KEYPATH = File.expand_path(ENV['AWS_SSH_KEY_PATH'] || "#{ENV['HOME']}/.ssh/id_rsa")
+%>
+---
+driver:
+  name: ec2
+  aws_access_key_id: <%= AWS_ACCESS_KEY_ID %>
+  aws_secret_access_key: <%= AWS_ACCESS_KEY_SECRET %>
+  aws_ssh_key_id: <%= AWS_SSH_KEY_ID %>
+  ssh_key: <%= AWS_SSH_KEYPATH %>
+  security_group_ids: ['sg-fb6cfa9e'] # test-kitchen
+  region: us-east-1
+  availability_zone: us-east-1c
+  flavor_id: m3.large
+  subnet_id: subnet-3e010678
+  associate_public_ip: true
+  iam_profile_name: test-kitchen
+  use_iam_profile: false
+  require_chef_omnibus: true
+  tags:
+    created-by: 'test-kitchen'
+    launched-by: <%= ENV['USER'] || '(ENTER_USER)' %>
+    Name: 'test-kitchen-cookbook-mesos-wrapper-<%= Time.now.to_i %>'
+
+busser:
+  sudo: true
+
+provisioner:
+  name: chef_zero
+  require_chef_omnibus: 11.12.2
+  data_path: test/shared
+
+platforms:
+- name: ubuntu-14.04
+  run_list:
+    - recipe[apt]
+  driver_config:
+    image_id: ami-018c9568
+    username: ubuntu
+
+suites:
+  - name: mesosphere_master
+    run_list:
+      - recipe[mesos::master]
+      - recipe[ulimit]
+    attributes:
+      mesos:
+        version: '0.18.2'
+        type: mesosphere
+        mesosphere:
+          with_zookeeper: true
+        master:
+          zk: 'zk://localhost:2181/mesos'
+        master_ips: ['10.0.0.1', '10.0.0.2', '10.0.0.3']
+        slave_ips:  ['11.0.0.1', '11.0.0.2', '11.0.0.3']
+      ulimit:
+        users:
+          root:
+            filehandle_limit: 64000
+            process_limit: 32000
+          vagrant:
+            filehandle_limit: 64000
+            process_limit": 32000
+  - name: mesosphere_slave
+    run_list:
+      # master recipe is only for asserting mesos-slave healthy startup.
+      - recipe[mesos::master]
+      - recipe[mesos::slave]
+      - recipe[ulimit]
+    attributes:
+      mesos:
+        version: '0.18.2'
+        type: mesosphere
+        slave:
+          master: 'zk://localhost:2181/mesos'
+        # these keys below are only for master configurations.
+        master_ips: ['10.0.0.1', '10.0.0.2', '10.0.0.3']
+        slave_ips:  ['11.0.0.1', '11.0.0.2', '11.0.0.3']
+        mesosphere:
+          with_zookeeper: true
+      ulimit:
+        users:
+          root:
+            filehandle_limit: 64000
+            process_limit: 32000
+          vagrant:
+            filehandle_limit: 64000
+            process_limit": 32000
+  - name: source_master
+    run_list:
+      - recipe[mesos::master]
+    attributes:
+      mesos:
+        type: source
+        master_ips: ['10.0.0.1', '10.0.0.2', '10.0.0.3']
+        slave_ips:  ['11.0.0.1', '11.0.0.2', '11.0.0.3']
+  - name: source_slave
+    run_list:
+      # master recipe is only for asserting mesos-slave healthy startup.
+      - recipe[mesos::master]
+      - recipe[mesos::slave]
+    attributes:
+      mesos:
+        type: source
+        master:
+          ip: 127.0.0.1
+        slave:
+          master: 127.0.0.1:5050
+        # these keys below are only for master configurations.
+        master_ips: ['10.0.0.1', '10.0.0.2', '10.0.0.3']
+        slave_ips:  ['11.0.0.1', '11.0.0.2', '11.0.0.3']
