@@ -6,18 +6,11 @@
 #
 # All rights reserved - Do Not Redistribute
 #
-version = node[:mesos][:version]
+version = node['mesos']['version']
+platform = node['platform']
 
-# For now we need to use the latest 13.x based deb
-# package until a trusty mesos deb is available
-# from the mesosphere site.
-if node['platform_version'] == '14.04'
-  platform_version = '13.10'
-else
-  platform_version = node['platform_version']
-end
-
-download_url = "http://downloads.mesosphere.io/master/#{node['platform']}/#{platform_version}/mesos_#{version}_amd64.deb"
+download_url = 'https://s3.amazonaws.com/sailthru-ds-public/mesos_0.19.0~ubuntu14.04%2B1_amd64.deb'
+download_binary_sha256 = '576d1584989e1a8c7c62285df97bf71b13aafaeef9402a576c4d9649419a561b'
 
 # TODO(everpeace) platform_version validation
 if !platform?("ubuntu") then
@@ -63,6 +56,7 @@ if node['mesos']['mesosphere']['with_zookeeper'] then
 remote_file "#{Chef::Config[:file_cache_path]}/mesos_#{version}.deb" do
   source "#{download_url}"
   mode   0644
+  checksum download_binary_sha256
   not_if { installed==true }
   notifies :install, "dpkg_package[mesos]"
 end
