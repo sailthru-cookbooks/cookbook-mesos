@@ -42,6 +42,7 @@ template File.join(deploy_dir, "masters") do
   mode 0644
   owner "root"
   group "root"
+  notifies :restart, 'service[mesos-master]', :delayed
 end
 
 template File.join(deploy_dir, "slaves") do
@@ -49,6 +50,7 @@ template File.join(deploy_dir, "slaves") do
   mode 0644
   owner "root"
   group "root"
+  notifies :restart, 'service[mesos-master]', :delayed
 end
 
 template File.join(deploy_dir, "mesos-deploy-env.sh") do
@@ -56,6 +58,7 @@ template File.join(deploy_dir, "mesos-deploy-env.sh") do
   mode 0644
   owner "root"
   group "root"
+  notifies :restart, 'service[mesos-master]', :delayed
 end
 
 template File.join(prefix, "var", "mesos", "deploy", "mesos-master-env.sh") do
@@ -63,6 +66,7 @@ template File.join(prefix, "var", "mesos", "deploy", "mesos-master-env.sh") do
   mode 0644
   owner "root"
   group "root"
+  notifies :restart, 'service[mesos-master]', :delayed
 end
 
 # configuration files for upstart scripts by build_from_source installation
@@ -74,6 +78,7 @@ if node[:mesos][:type] == 'source' then
     owner "root"
     group "root"
   end
+  notifies :restart, 'service[mesos-master]', :delayed
 end
 
 # configuration files for upstart scripts by mesosphere package.
@@ -84,6 +89,7 @@ if node[:mesos][:type] == 'mesosphere' then
     mode 0644
     owner "root"
     group "root"
+    notifies :restart, 'service[mesos-master]', :delayed
   end
 
   template File.join("/etc", "mesos", "zk") do
@@ -94,6 +100,7 @@ if node[:mesos][:type] == 'mesosphere' then
     variables({
       :zk => node[:mesos][:master][:zk]
     })
+    notifies :restart, 'service[mesos-master]', :delayed
   end
 
   template File.join("/etc", "default", "mesos") do
@@ -104,6 +111,7 @@ if node[:mesos][:type] == 'mesosphere' then
     variables({
       :log_dir => node[:mesos][:master][:log_dir]
     })
+    notifies :restart, 'service[mesos-master]', :delayed
   end
 
   template File.join("/etc", "default", "mesos-master") do
@@ -114,6 +122,7 @@ if node[:mesos][:type] == 'mesosphere' then
     variables({
       :port => node[:mesos][:master][:port]
     })
+    notifies :restart, 'service[mesos-master]', :delayed
   end
 
   directory File.join("/etc", "mesos-master") do
@@ -153,6 +162,5 @@ end
 
 service "mesos-master" do
   provider Chef::Provider::Service::Upstart
-  action :restart
+  action :start
 end
-

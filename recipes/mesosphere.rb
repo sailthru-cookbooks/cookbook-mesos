@@ -9,9 +9,9 @@
 version = node[:mesos][:version]
 
 # For now we need to use the latest 13.x based deb
-# package until a trusty mesos deb is available
-# from the mesosphere site.
-if node['platform_version'] == '14.04'
+# package for all mesos packages prior to 0.19.0
+# downloaded from the mesosphere site.
+if node['platform_version'] == '14.04' && version < "0.19.0"
   platform_version = '13.10'
 else
   platform_version = node['platform_version']
