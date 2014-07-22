@@ -17,10 +17,10 @@ else
   platform_version = node['platform_version']
 end
 
-if version < "0.19.0" then
-  download_url = "http://downloads.mesosphere.io/master/#{node['platform']}/#{platform_version}/mesos_#{version}_amd64.deb"
-else
+if version == "0.19.0" then
   download_url = "http://downloads.mesosphere.io/master/#{node['platform']}/#{platform_version}/mesos_#{version}~#{node['platform']}#{platform_version}%2B1_amd64.deb"
+else
+  download_url = "http://downloads.mesosphere.io/master/#{node['platform']}/#{platform_version}/mesos_#{version}_amd64.deb"
 end
 
 # TODO(everpeace) platform_version validation
