@@ -21,6 +21,8 @@ if version == "0.19.0" then
   download_url = "http://downloads.mesosphere.io/master/#{node['platform']}/#{platform_version}/mesos_#{version}~#{node['platform']}#{platform_version}%2B1_amd64.deb"
 elsif version == "0.19.1"
   download_url = "http://downloads.mesosphere.io/master/ubuntu/14.04/mesos_0.19.1-1.0.ubuntu1404_amd64.deb"
+elsif version == "0.20.0"
+  download_url = "http://downloads.mesosphere.io/master/ubuntu/14.04/mesos_0.20.0-1.0.ubuntu1404_amd64.deb"
 else
   download_url = "http://downloads.mesosphere.io/master/#{node['platform']}/#{platform_version}/mesos_#{version}_amd64.deb"
 end
