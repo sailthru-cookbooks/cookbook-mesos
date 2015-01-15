@@ -85,9 +85,11 @@ if node[:mesos][:type] == 'mesosphere' then
     mode 0644
     owner "root"
     group "root"
-    variables({
-      :zk => node[:mesos][:slave][:master]
-    })
+    variables lazy {
+      {
+        :zk => node[:mesos][:slave][:master]
+      }
+    }
     notifies :restart, 'service[mesos-slave]', :delayed
   end
 
