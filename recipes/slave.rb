@@ -37,7 +37,7 @@ if node[:mesos][:slave][:master_url] then
   end
 end
 
-ruby_block do
+ruby_block "check zookeeper attribute" do
   block do
     if ! node[:mesos][:slave][:master] then
       Chef::Application.fatal!("node[:mesos][:slave][:master] is required to configure mesos-slave.")
