@@ -1,5 +1,7 @@
-source 'https://api.berkshelf.com'
+source 'http://api.berkshelf.com'
 
 metadata
 
-cookbook 'apt'
+group :test do
+  cookbook 'apt'
+end

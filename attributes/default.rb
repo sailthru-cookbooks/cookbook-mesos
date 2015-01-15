@@ -13,6 +13,7 @@ default[:mesos] = {
   :slave_ips  => [],
   :master  => {
     :log_dir  => "/var/log/mesos",
+    :work_dir => "/tmp/mesos",
     :port     => "5050"
   },
   :slave   => {

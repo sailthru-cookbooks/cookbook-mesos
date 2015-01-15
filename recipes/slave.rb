@@ -46,6 +46,7 @@ template File.join(deploy_dir, "mesos-deploy-env.sh") do
   mode 0644
   owner "root"
   group "root"
+  notifies :restart, 'service[mesos-slave]', :delayed
 end
 
 template File.join(deploy_dir, "mesos-slave-env.sh") do
@@ -53,6 +54,7 @@ template File.join(deploy_dir, "mesos-slave-env.sh") do
   mode 0644
   owner "root"
   group "root"
+  notifies :restart, 'service[mesos-slave]', :delayed
 end
 
 # configuration files for upstart scripts by build_from_source installation
@@ -63,6 +65,7 @@ if node[:mesos][:type] == 'source' then
     mode 0644
     owner "root"
     group "root"
+    notifies :restart, 'service[mesos-slave]', :delayed
   end
 end
 
@@ -74,6 +77,7 @@ if node[:mesos][:type] == 'mesosphere' then
     mode 0644
     owner "root"
     group "root"
+    notifies :restart, 'service[mesos-slave]', :delayed
   end
 
   template File.join("/etc", "mesos", "zk") do
@@ -84,6 +88,7 @@ if node[:mesos][:type] == 'mesosphere' then
     variables({
       :zk => node[:mesos][:slave][:master]
     })
+    notifies :restart, 'service[mesos-slave]', :delayed
   end
 
   template File.join("/etc", "default", "mesos") do
@@ -94,6 +99,7 @@ if node[:mesos][:type] == 'mesosphere' then
     variables({
       :log_dir => node[:mesos][:slave][:log_dir]
     })
+    notifies :restart, 'service[mesos-slave]', :delayed
   end
 
   template File.join("/etc", "default", "mesos-slave") do
@@ -104,6 +110,7 @@ if node[:mesos][:type] == 'mesosphere' then
     variables({
       :isolation => node[:mesos][:slave][:isolation]
     })
+    notifies :restart, 'service[mesos-slave]', :delayed
   end
 
   directory File.join("/etc", "mesos-slave") do
@@ -143,5 +150,5 @@ end
 
 service "mesos-slave" do
   provider Chef::Provider::Service::Upstart
-  action :restart
+  action :start
 end

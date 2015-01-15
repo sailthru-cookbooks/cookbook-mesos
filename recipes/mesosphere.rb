@@ -6,11 +6,26 @@
 #
 # All rights reserved - Do Not Redistribute
 #
-version = node['mesos']['version']
-platform = node['platform']
+version = node[:mesos][:version]
 
-download_url = 'https://s3.amazonaws.com/sailthru-ds-public/mesos_0.19.0~ubuntu14.04%2B1_amd64.deb'
-download_binary_sha256 = '576d1584989e1a8c7c62285df97bf71b13aafaeef9402a576c4d9649419a561b'
+# For now we need to use the latest 13.x based deb
+# package for all mesos packages prior to 0.19.0
+# downloaded from the mesosphere site.
+if node['platform_version'] == '14.04' && version < "0.19.0"
+  platform_version = '13.10'
+else
+  platform_version = node['platform_version']
+end
+
+if version == "0.19.0" then
+  download_url = "http://downloads.mesosphere.io/master/#{node['platform']}/#{platform_version}/mesos_#{version}~#{node['platform']}#{platform_version}%2B1_amd64.deb"
+elsif version == "0.19.1"
+  download_url = "http://downloads.mesosphere.io/master/ubuntu/14.04/mesos_0.19.1-1.0.ubuntu1404_amd64.deb"
+elsif version == "0.20.0"
+  download_url = "http://downloads.mesosphere.io/master/ubuntu/14.04/mesos_0.20.0-1.0.ubuntu1404_amd64.deb"
+else
+  download_url = "http://downloads.mesosphere.io/master/#{node['platform']}/#{platform_version}/mesos_#{version}_amd64.deb"
+end
 
 # TODO(everpeace) platform_version validation
 if !platform?("ubuntu") then
@@ -56,7 +71,6 @@ if node['mesos']['mesosphere']['with_zookeeper'] then
 remote_file "#{Chef::Config[:file_cache_path]}/mesos_#{version}.deb" do
   source "#{download_url}"
   mode   0644
-  checksum download_binary_sha256
   not_if { installed==true }
   notifies :install, "dpkg_package[mesos]"
 end
