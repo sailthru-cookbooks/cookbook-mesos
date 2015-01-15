@@ -37,8 +37,12 @@ if node[:mesos][:slave][:master_url] then
   end
 end
 
-if ! node[:mesos][:slave][:master] then
-  Chef::Application.fatal!("node[:mesos][:slave][:master] is required to configure mesos-slave.")
+ruby_block do
+  block do
+    if ! node[:mesos][:slave][:master] then
+      Chef::Application.fatal!("node[:mesos][:slave][:master] is required to configure mesos-slave.")
+    end
+  end
 end
 
 template File.join(deploy_dir, "mesos-deploy-env.sh") do
