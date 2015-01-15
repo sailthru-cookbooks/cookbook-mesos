@@ -91,9 +91,11 @@ if node[:mesos][:type] == 'mesosphere' then
     mode 0644
     owner "root"
     group "root"
-    variables({
-      :zk => node[:mesos][:master][:zk]
-    })
+    variables lazy {
+      {
+        :zk => node[:mesos][:master][:zk]
+      }
+    }
   end
 
   template File.join("/etc", "default", "mesos") do
