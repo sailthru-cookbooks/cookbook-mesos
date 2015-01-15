@@ -88,4 +88,3 @@ attribute           "mesos/slave/master_url",
   :recipes       => ["mesos::slave"],
   :display_name  => "master url",
   :description   => "[OBSOLUTE] Use mesos/slave/master.  mesos master url. this should  be host:port for non-ZooKeeper based masters, otherwise a zk:// or file://."
-
