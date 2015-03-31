@@ -55,7 +55,7 @@ end
 
 package 'mesos' do
   action :install
-  version version
+  version "#{version}*"
 end
 
 # configuration files for upstart scripts by build_from_source installation
