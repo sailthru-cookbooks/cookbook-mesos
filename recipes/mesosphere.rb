@@ -22,11 +22,6 @@ if !platform?("ubuntu") then
   Chef::Application.fatal!("#{platform} is not supported on #{cookbook_name} cookbook")
 end
 
-installed = File.exist?("/usr/local/sbin/mesos-master")
-if installed then
-  Chef::Log.info("Mesos is already installed!! Instllation will be skipped.")
-end
-
 apt_package "default-jre-headless" do
   action :install
   not_if { installed==true }
@@ -61,6 +56,7 @@ end
 
 package 'mesos' do
   action :install
+  version version
 end
 
 # configuration files for upstart scripts by build_from_source installation
