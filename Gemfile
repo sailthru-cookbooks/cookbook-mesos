@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'berkshelf', github: 'berkshelf/berkshelf'
+gem 'berkshelf', '>= 3.1.4'
 gem 'foodcritic'
 gem 'rubocop'
 gem 'rubocop-checkstyle_formatter'

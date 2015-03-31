@@ -17,16 +17,6 @@ else
   platform_version = node['platform_version']
 end
 
-if version == "0.19.0" then
-  download_url = "http://downloads.mesosphere.io/master/#{node['platform']}/#{platform_version}/mesos_#{version}~#{node['platform']}#{platform_version}%2B1_amd64.deb"
-elsif version == "0.19.1"
-  download_url = "http://downloads.mesosphere.io/master/ubuntu/14.04/mesos_0.19.1-1.0.ubuntu1404_amd64.deb"
-elsif version == "0.20.0"
-  download_url = "http://downloads.mesosphere.io/master/ubuntu/14.04/mesos_0.20.0-1.0.ubuntu1404_amd64.deb"
-else
-  download_url = "http://downloads.mesosphere.io/master/#{node['platform']}/#{platform_version}/mesos_#{version}_amd64.deb"
-end
-
 # TODO(everpeace) platform_version validation
 if !platform?("ubuntu") then
   Chef::Application.fatal!("#{platform} is not supported on #{cookbook_name} cookbook")
@@ -35,14 +25,6 @@ end
 installed = File.exist?("/usr/local/sbin/mesos-master")
 if installed then
   Chef::Log.info("Mesos is already installed!! Instllation will be skipped.")
-end
-
-# install dependencies and unzip
-['unzip', 'libcurl3'].each do |pkg|
-  package pkg do
-    action :install
-    not_if { installed == true }
-  end
 end
 
 apt_package "default-jre-headless" do
@@ -61,24 +43,24 @@ if node['mesos']['mesosphere']['with_zookeeper'] then
     package zk do
       action :install
     end
-   end
-   service "zookeeper" do
-      provider Chef::Provider::Service::Upstart
-      action :restart
-   end
- end
-
-remote_file "#{Chef::Config[:file_cache_path]}/mesos_#{version}.deb" do
-  source "#{download_url}"
-  mode   0644
-  not_if { installed==true }
-  notifies :install, "dpkg_package[mesos]"
+  end
+  service "zookeeper" do
+    provider Chef::Provider::Service::Upstart
+    action :restart
+  end
 end
 
-dpkg_package "mesos" do
-  source "#{Chef::Config[:file_cache_path]}/mesos_#{version}.deb"
+apt_repository 'mesosphere' do
+  uri 'http://repos.mesosphere.io/ubuntu'
+  components ['main']
+  distribution 'trusty'
+  key 'E56151BF'
+  keyserver 'keyserver.ubuntu.com'
+  action :add
+end
+
+package 'mesos' do
   action :install
-  not_if { installed==true }
 end
 
 # configuration files for upstart scripts by build_from_source installation

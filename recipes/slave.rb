@@ -7,24 +7,11 @@
 # All rights reserved - Do Not Redistribute
 #
 
-if node[:mesos][:type] == 'source' then
-  prefix = node[:mesos][:prefix]
-elsif node[:mesos][:type] == 'mesosphere' then
-  prefix = File.join("/usr", "local")
-  Chef::Log.info("node[:mesos][:prefix] is ignored. prefix will be set with /usr/local .")
-else
-  Chef::Application.fatal!("node['mesos']['type'] should be 'source' or 'mesosphere'.")
-end
-
-deploy_dir = File.join(prefix, "var", "mesos", "deploy")
+prefix = '/usr'
 installed = File.exists?(File.join(prefix, "sbin", "mesos-master"))
 
 if !installed then
-  if node[:mesos][:type] == 'source' then
-    include_recipe "mesos::build_from_source"
-  elsif node[:mesos][:type] == 'mesosphere'
-    include_recipe "mesos::mesosphere"
-  end
+  include_recipe "mesos::mesosphere"
 end
 
 # for backword compatibility
@@ -42,34 +29,6 @@ ruby_block "check zookeeper attribute" do
     if ! node[:mesos][:slave][:master] then
       Chef::Application.fatal!("node[:mesos][:slave][:master] is required to configure mesos-slave.")
     end
-  end
-end
-
-template File.join(deploy_dir, "mesos-deploy-env.sh") do
-  source "mesos-deploy-env.sh.erb"
-  mode 0644
-  owner "root"
-  group "root"
-  notifies :restart, 'service[mesos-slave]', :delayed
-end
-
-template File.join(deploy_dir, "mesos-slave-env.sh") do
-  source "mesos-slave-env.sh.erb"
-  mode 0644
-  owner "root"
-  group "root"
-  notifies :restart, 'service[mesos-slave]', :delayed
-end
-
-# configuration files for upstart scripts by build_from_source installation
-if node[:mesos][:type] == 'source' then
-  template "/etc/init/mesos-slave.conf" do
-    source "upstart.conf.for.buld_from_source.erb"
-    variables(:init_state => "start", :role => "slave")
-    mode 0644
-    owner "root"
-    group "root"
-    notifies :restart, 'service[mesos-slave]', :delayed
   end
 end
 

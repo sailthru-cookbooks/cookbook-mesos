@@ -4,11 +4,10 @@ maintainer_email 'everpeace@gmail.com'
 license          'MIT'
 description      'Installs/Configures mesos'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          '0.1.6'
+version          '2.0.0'
 supports         'ubuntu', '>= 12.04'
 recipe           "mesos::default", "install mesos."
 recipe           "mesos::mesosphere", "install mesos from mesosphere package."
-recipe           "mesos::build_from_source", "install mesos from source(default recipe)."
 recipe           "mesos::master",  "configure the machine as master."
 recipe           "mesos::slave",   "configure the machine as slave."
 recipe           "mesos::docker-executor", "install mesos-docker executor"
@@ -19,18 +18,11 @@ depends          'build-essential'
 depends          'ulimit'
 suggests         'docker'
 
-attribute           "mesos/type",
-  :recipes       => ["mesos::build_from_source", "mesos::mesosphere", "mesos::master", "mesos::slave"],
-  :display_name  => "installation type",
-  :description   => "Value should be 'source' | 'mesosphere'.",
-  :description   => "instlal type",
-  :default       => "source"
-
 attribute           "mesos/version",
   :recipes       => ["mesos::build_from_source", "mesos::mesosphere"],
   :display_name  => "Version to be installed.",
   :description   => "branch name or tag name at http://github.com/apache/mesos, or mesos's version name",
-  :default       => "0.19.0"
+  :default       => "0.22.0"
 
 attribute           "mesos/mesosphere/with_zookeeper",
   :recipes       => ["mesos::mesosphere"],
