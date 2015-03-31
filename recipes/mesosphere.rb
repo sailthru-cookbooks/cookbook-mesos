@@ -24,7 +24,6 @@ end
 
 apt_package "default-jre-headless" do
   action :install
-  not_if { installed==true }
 end
 
 # workaround for "error while loading shared libraries: libjvm.so: cannot open shared object file: No such file or directory"
