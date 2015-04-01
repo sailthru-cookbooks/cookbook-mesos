@@ -23,6 +23,8 @@ elsif version == "0.19.1"
   download_url = "http://downloads.mesosphere.io/master/ubuntu/14.04/mesos_0.19.1-1.0.ubuntu1404_amd64.deb"
 elsif version == "0.20.0"
   download_url = "http://downloads.mesosphere.io/master/ubuntu/14.04/mesos_0.20.0-1.0.ubuntu1404_amd64.deb"
+elsif version == "0.21.1"
+  download_url = "http://downloads.mesosphere.io/master/ubuntu/14.04/mesos_0.21.1-1.1.ubuntu1404_amd64.deb"
 else
   download_url = "http://downloads.mesosphere.io/master/#{node['platform']}/#{platform_version}/mesos_#{version}_amd64.deb"
 end
@@ -38,7 +40,7 @@ if installed then
 end
 
 # install dependencies and unzip
-['unzip', 'libcurl3'].each do |pkg|
+['unzip', 'libcurl3', 'libserf-1-1', 'libsvn1' ].each do |pkg|
   package pkg do
     action :install
     not_if { installed == true }

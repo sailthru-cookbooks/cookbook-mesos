@@ -6,16 +6,27 @@
 #
 # All rights reserved - Do Not Redistribute
 #
+
+include_recipe 'chef-sugar::default'
+
 if node[:mesos][:type] == 'source' then
   prefix = node[:mesos][:prefix]
+  deploy_dir = File.join(prefix, "var", "mesos", "deploy")
 elsif node[:mesos][:type] == 'mesosphere' then
-  prefix = File.join("/usr", "local")
-  Chef::Log.info("node[:mesos][:prefix] is ignored. prefix will be set with /usr/local .")
+  if version(node[:mesos][:version]).satisfies?('<= 0.20.0')
+    prefix = File.join("/usr", "local")
+    deploy_dir = File.join(prefix, "var", "mesos", "deploy")
+  else
+    prefix = File.new("/usr")
+    deploy_dir = File.join(prefix, "etc", "mesos")
+  end
+  Chef::Log.info("node[:mesos][:prefix] is ignored. prefix will be set with #{prefix} .")
 else
   Chef::Application.fatal!("node['mesos']['type'] should be 'source' or 'mesosphere'.")
 end
 
-deploy_dir = File.join(prefix, "var", "mesos", "deploy")
+Chef::Log.info("Deploy diretory set to #{deploy_dir} .")
+
 installed = File.exists?(File.join(prefix, "sbin", "mesos-master"))
 
 if !installed then
@@ -61,7 +72,7 @@ template File.join(deploy_dir, "mesos-deploy-env.sh") do
   notifies :restart, 'service[mesos-master]', :delayed
 end
 
-template File.join(prefix, "var", "mesos", "deploy", "mesos-master-env.sh") do
+template File.join(deploy_dir, "mesos-master-env.sh") do
   source "mesos-master-env.sh.erb"
   mode 0644
   owner "root"

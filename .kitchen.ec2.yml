@@ -66,7 +66,7 @@ suites:
         #          work_dir: '/tmp/mesos'
         #          quorum: 1
         #=======
-        version: '0.18.2'
+        version: '0.21.1'
         type: mesosphere
         mesosphere:
           with_zookeeper: true
@@ -91,7 +91,7 @@ suites:
       - recipe[ulimit]
     attributes:
       mesos:
-        version: '0.18.2'
+        version: '0.21.1'
         type: mesosphere
         slave:
           master: 'zk://localhost:2181/mesos'

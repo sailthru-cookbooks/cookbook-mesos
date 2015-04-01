@@ -4,7 +4,7 @@ maintainer_email 'everpeace@gmail.com'
 license          'MIT'
 description      'Installs/Configures mesos'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          '0.1.6'
+version          '0.1.7'
 supports         'ubuntu', '>= 12.04'
 recipe           "mesos::default", "install mesos."
 recipe           "mesos::mesosphere", "install mesos from mesosphere package."
@@ -17,6 +17,7 @@ depends          'java'
 depends          'python'
 depends          'build-essential'
 depends          'ulimit'
+depends          'chef-sugar'
 suggests         'docker'
 
 attribute           "mesos/type",
