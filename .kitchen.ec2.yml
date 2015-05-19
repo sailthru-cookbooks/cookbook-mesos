@@ -49,30 +49,13 @@ suites:
       - recipe[ulimit]
     attributes:
       mesos:
-        # kept from merging, might be needed
-        #<<<<<<< HEAD 
-        #        version: '0.19.0'
-        #        type: mesosphere
-        #        mesosphere:
-        #          with_zookeeper: true
-        #          binaries:
-        #            '0.19.0':
-        #              ubuntu:
-        #                '14.04':
-        #                  download_url: 'http://downloads.mesosphere.io/master/ubuntu/14.04/mesos_0.19.0~ubuntu14.04%2B1_amd64.deb'
-        #                  sha256: '576d1584989e1a8c7c62285df97bf71b13aafaeef9402a576c4d9649419a561b'
-        #        master:
-        #          zk: 'zk://localhost:2181/mesos'
-        #          work_dir: '/tmp/mesos'
-        #          quorum: 1
-        #=======
-        version: '0.21.1'
+        version: '0.22.1'
         type: mesosphere
         mesosphere:
           with_zookeeper: true
         master:
           zk: 'zk://localhost:2181/mesos'
-            #>>>>>>> 55206527f642f396de2dc3afd2cfc3e111c16562
+          quorum: 1
         master_ips: ['10.0.0.1', '10.0.0.2', '10.0.0.3']
         slave_ips:  ['11.0.0.1', '11.0.0.2', '11.0.0.3']
       ulimit:
@@ -91,7 +74,7 @@ suites:
       - recipe[ulimit]
     attributes:
       mesos:
-        version: '0.21.1'
+        version: '0.22.1'
         type: mesosphere
         slave:
           master: 'zk://localhost:2181/mesos'
