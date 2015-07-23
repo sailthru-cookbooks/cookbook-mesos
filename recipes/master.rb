@@ -25,7 +25,7 @@ else
   Chef::Application.fatal!("node['mesos']['type'] should be 'source' or 'mesosphere'.")
 end
 
-Chef::Log.info("Deploy diretory set to #{deploy_dir} .")
+Chef::Log.info("Deploy directory set to #{deploy_dir} .")
 
 installed = File.exists?(File.join(prefix, "sbin", "mesos-master"))
 
