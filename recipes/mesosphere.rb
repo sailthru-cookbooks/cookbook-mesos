@@ -27,6 +27,12 @@ elsif version == "0.21.1"
   download_url = "http://downloads.mesosphere.io/master/ubuntu/14.04/mesos_0.21.1-1.1.ubuntu1404_amd64.deb"
 elsif version == "0.22.1"
   download_url = "http://downloads.mesosphere.io/master/ubuntu/14.04/mesos_0.22.1-1.0.ubuntu1404_amd64.deb"
+elsif version == "0.23.1"
+  download_url = "http://downloads.mesosphere.io/master/ubuntu/14.04/mesos_0.23.1-0.2.61.ubuntu1404_amd64.deb"
+elsif version == "0.24.1"
+  download_url = "http://downloads.mesosphere.io/master/ubuntu/14.04/mesos_0.24.1-0.2.35.ubuntu1404_amd64.deb"
+elsif version == "0.25.0"
+  download_url = "http://downloads.mesosphere.io/master/ubuntu/14.04/mesos_0.25.0-0.2.70.ubuntu1404_amd64.deb"
 else
   download_url = "http://downloads.mesosphere.io/master/#{node['platform']}/#{platform_version}/mesos_#{version}_amd64.deb"
 end
@@ -36,22 +42,22 @@ if !platform?("ubuntu") then
   Chef::Application.fatal!("#{platform} is not supported on #{cookbook_name} cookbook")
 end
 
-installed = File.exist?("/usr/local/sbin/mesos-master")
-if installed then
-  Chef::Log.info("Mesos is already installed!! Instllation will be skipped.")
+#mesos_installed? = File.exist?("/usr/local/sbin/mesos-master")
+if mesos_installed? then
+  Chef::Log.info("Mesos is already mesos_installed!! Installation will be skipped.")
 end
 
 # install dependencies and unzip
 ['unzip', 'libcurl3', 'libserf-1-1', 'libsvn1' ].each do |pkg|
   package pkg do
     action :install
-    not_if { installed == true }
+    not_if { mesos_installed? == true }
   end
 end
 
 apt_package "default-jre-headless" do
   action :install
-  not_if { installed==true }
+  not_if { mesos_installed? == true }
 end
 
 # workaround for "error while loading shared libraries: libjvm.so: cannot open shared object file: No such file or directory"
@@ -75,14 +81,14 @@ if node['mesos']['mesosphere']['with_zookeeper'] then
 remote_file "#{Chef::Config[:file_cache_path]}/mesos_#{version}.deb" do
   source "#{download_url}"
   mode   0644
-  not_if { installed==true }
+  not_if { mesos_installed? == true }
   notifies :install, "dpkg_package[mesos]"
 end
 
 dpkg_package "mesos" do
   source "#{Chef::Config[:file_cache_path]}/mesos_#{version}.deb"
   action :install
-  not_if { installed==true }
+  not_if { mesos_installed? == true }
 end
 
 # configuration files for upstart scripts by build_from_source installation

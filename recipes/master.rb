@@ -27,9 +27,9 @@ end
 
 Chef::Log.info("Deploy directory set to #{deploy_dir} .")
 
-installed = File.exists?(File.join(prefix, "sbin", "mesos-master"))
+#installed = File.exists?(File.join(prefix, "sbin", "mesos-master"))
 
-if !installed then
+unless mesos_installed? then
   if node[:mesos][:type] == 'source' then
     include_recipe "mesos::build_from_source"
   elsif node[:mesos][:type] == 'mesosphere'

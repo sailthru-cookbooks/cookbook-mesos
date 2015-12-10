@@ -9,10 +9,10 @@
 version = node[:mesos][:version]
 prefix = node[:mesos][:prefix]
 download_url = "https://github.com/apache/mesos/archive/#{version}.zip"
-installed = File.exist?(File.join(prefix, "sbin", "mesos-master"))
+#installed = File.exist?(File.join(prefix, "sbin", "mesos-master"))
 
-if installed then
-  Chef::Log.info("Mesos is already installed!! Instllation will be skipped.")
+if mesos_installed? then
+  Chef::Log.info("Mesos is already installed!! Installation will be skipped.")
 end
 
 include_recipe "java"
@@ -30,7 +30,7 @@ end
 remote_file "#{Chef::Config[:file_cache_path]}/mesos-#{version}.zip" do
   source "#{download_url}"
   mode   "0644"
-  not_if { installed==true }
+  not_if { mesos_installed? == true }
 end
 
 bash "extracting mesos to #{node[:mesos][:home]}" do
@@ -40,7 +40,7 @@ bash "extracting mesos to #{node[:mesos][:home]}" do
     mv mesos-#{version} mesos
   EOH
   action :run
-  not_if { installed==true }
+  not_if { mesos_installed? == true }
 end
 
 bash "building mesos from source" do
@@ -54,14 +54,14 @@ bash "building mesos from source" do
     make
   EOH
   action :run
-  not_if { installed==true }
+  not_if { mesos_installed? == true }
 end
 
 bash "testing mesos" do
   cwd    File.join("#{node[:mesos][:home]}", "mesos", "build")
   code   "make check"
   action :run
-  only_if { installed==false && node[:mesos][:build][:skip_test]==false }
+  only_if { mesos_installed? == false && node[:mesos][:build][:skip_test]==false }
 end
 
 bash "install mesos to #{prefix}" do
@@ -71,7 +71,7 @@ bash "install mesos to #{prefix}" do
     ldconfig
   EOH
   action :run
-  not_if { installed==true }
+  not_if { mesos_installed? == true }
 end
 
 # configuration files for upstart scripts by build_from_source installation

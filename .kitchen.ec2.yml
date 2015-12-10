@@ -49,7 +49,7 @@ suites:
       - recipe[ulimit]
     attributes:
       mesos:
-        version: '0.22.1'
+        version: '0.25.0'
         type: mesosphere
         mesosphere:
           with_zookeeper: true
