@@ -7,6 +7,8 @@
 # All rights reserved - Do Not Redistribute
 #
 
+extend Mesos::Helpers
+
 include_recipe 'chef-sugar::default'
 
 if node[:mesos][:type] == 'source' then

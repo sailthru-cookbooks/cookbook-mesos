@@ -7,6 +7,8 @@
 # All rights reserved - Do Not Redistribute
 #
 
+extend Mesos::Helpers
+
 include_recipe 'chef-sugar::default'
 
 if node[:mesos][:type] == 'source' then
@@ -26,8 +28,6 @@ else
 end
 
 Chef::Log.info("Deploy diretory set to #{deploy_dir} .")
-
-#installed = File.exists?(File.join(prefix, "sbin", "mesos-master"))
 
 unless mesos_installed? then
   if node[:mesos][:type] == 'source' then

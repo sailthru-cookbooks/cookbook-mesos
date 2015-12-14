@@ -49,6 +49,7 @@ suites:
       - recipe[ulimit]
     attributes:
       mesos:
+        bin_path: "/usr/sbin"
         version: '0.25.0'
         type: mesosphere
         mesosphere:
